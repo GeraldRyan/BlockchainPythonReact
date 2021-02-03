@@ -6,17 +6,22 @@ class Blockchain:
     TheImplemented as a list of blocks - data sets of transactions
   """
   def __init__(self):
-    self.chain = [] # list of blocks
+    self.chain = [Block.genesis()] # list of blocks
     
   def add_block(self, data):
-    self.chain.append(Block(data))
+    self.chain.append(Block.mine_block(self.chain[-1], data))
 
   def __repr__(self):
     return f'Blockchain: {self.chain}'
 
-blockchain = Blockchain()
-blockchain.add_block("ShakespeareOne")
-blockchain.add_block("ShakespeareTwo")
-blockchain.add_block("ShakespeareThree")
+def main():
+  blockchain = Blockchain()
+  blockchain.add_block("ShakespeareOne")
+  blockchain.add_block("ShakespeareTwo")
+  blockchain.add_block("ShakespeareThree")
 
-print(blockchain)
+  print(blockchain) 
+  print(f'blockchain.py __name__: {__name__}')
+
+if __name__ == '__main__':
+  main()
