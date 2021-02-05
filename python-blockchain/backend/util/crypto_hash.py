@@ -5,7 +5,7 @@ def crypto_hash(*args):
   '''
   Return a sha-256 hash of the given arguments.
   '''
-  stringified_args = map(lambda data: json.dumps(data), args)
+  stringified_args = sorted(map(lambda data: json.dumps(data), args))
   # print(f'stringified args: {stringified_args}')
   joined_data = ''.join(stringified_args) # Stringify and join needed as we'll be passing timestamp, last_hash and data
   # print(f'joined_data: {joined_data}')
