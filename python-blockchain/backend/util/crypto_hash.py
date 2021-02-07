@@ -14,11 +14,14 @@ def crypto_hash(*args):
 
 def main():
   print(f"crypto_hash('args*'): {crypto_hash(2, 1, 'three', 'and', 2, 'tha', 5)}")
-
+  print(f"crypto_hash('foo'): {hashlib.sha256('foo'.encode('utf-8')).hexdigest()}") # same as in other C++ implementation!!
+  
 
 if __name__ == '__main__':
-  main()
   print(crypto_hash.__doc__)
+  main()
+
+  print("\nJust for fun, let's see how a string in binary is rendered in utf-16 and utf-8 respectively:" )
   print(b'\xcf\x84o\xcf\x81\xce\xbdo\xcf\x82'.decode('utf-16'))
   print(b'\xcf\x84o\xcf\x81\xce\xbdo\xcf\x82'.decode('utf-8'))
 
