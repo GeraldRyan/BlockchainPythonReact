@@ -72,7 +72,6 @@ class Block:
         """
         generate genesis block
         """
-        print("Genesis Block Created\n")
         return Block(**GENESIS_DATA)
 
     @staticmethod
@@ -93,14 +92,45 @@ class Block:
             return last_block.difficulty - 1
         return 1
 
+    @staticmethod
+    def is_valid_block(last_block, block):
+        '''
+        Validate a block by enforcing the following rules:
+        - the block must have the proper last_hash reference
+        - the block must meet the proof of work requirement
+        - the difficulty must only adjust by one
+        - the block hash must be a valid combination of the block fields
+        '''
+
+        if block.last_hash != last_block.hash:
+            raise Exception('The block last_hash must be correct')
+        if hex_to_binary(block.hash)[0:block.difficulty] != '0'* block.difficulty:
+            raise Exception('The proof of work requirement was not met')
+        if abs(last_block.difficulty - block.difficulty) > 1:
+            raise Exception('The block difficulty must only adjust by 1')
+        
+        reconstructed_hash = crypto_hash(
+            block.timestamp,
+            block.last_hash,
+            block.data,
+            block.nonce,
+            block.difficulty,
+            # block.last_block # Not necessary or used in hash function. It's part of object but is not put into hash
+        )
+        if block.hash != reconstructed_hash:
+            raise Exception('The block hash must be correct')
+
+
 
 def main():
-
     genesis_block = Block.genesis()
-    block = Block.mine_block(genesis_block, 'Shakespeare')
-    print(block)
-    print(Block.mine_block(genesis_block, 'Goodbye Norma Jean'))
-    print(Block.mine_block(genesis_block, 'Goodbye Elmer Fudd'))
+    bad_block = Block.mine_block(genesis_block,'foo')
+    bad_block.last_hash = 'evil_data' #TOGGLE ME good block/bad block
+    try:
+        Block.is_valid_block(genesis_block, bad_block)
+    except Exception as e: # means only exception message is displayed in console.
+        print(f'is_valid_block: {e}')
+
 
 
 if __name__ == '__main__':
