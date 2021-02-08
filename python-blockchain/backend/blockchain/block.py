@@ -20,6 +20,7 @@ class Block:
     Block: a unit of storage.
     Store transactions in a blockchain that supports a cryptocurrency.
     """
+    NUMBER = 2
 
     def __init__(self, timestamp, last_hash, hash, data, difficulty, nonce, last_block=None):
         self.timestamp = timestamp
@@ -48,12 +49,13 @@ class Block:
         """
         timestamp = time.time_ns()
         last_hash = last_block.hash
-        if last_block.last_block == None:
-            second_last_timestamp = last_block.timestamp
+        if last_block.last_block == None: # if block #2 
+            difficulty = 4 # second block and no need to call adjust. 
+        elif last_block.last_block.last_block == None:
+            difficulty = 5
         else:
             second_last_timestamp = last_block.last_block.timestamp
-
-        difficulty = Block.adjust_difficulty(last_block, second_last_timestamp)
+            difficulty = Block.adjust_difficulty(last_block, second_last_timestamp)
         nonce = 0
         hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
 
@@ -61,6 +63,8 @@ class Block:
             nonce += 1
             timestamp = time.time_ns()
             hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
+        # print(f"Block {Block.NUMBER} mined. Difficulty:{difficulty}\n\n")
+        Block.NUMBER +=1
         return Block(timestamp, last_hash, hash, data, difficulty, nonce, last_block)
 
     @staticmethod
@@ -68,6 +72,7 @@ class Block:
         """
         generate genesis block
         """
+        print("Genesis Block Created\n")
         return Block(**GENESIS_DATA)
 
     @staticmethod
@@ -78,6 +83,7 @@ class Block:
         Decrease the difficulty for slowly mined blocks. 
         '''
         time_diff = last_block.timestamp - second_last_timestamp
+        # print(f"Block time difference:{time_diff/1000000000}")
         if (time_diff) < MINE_RATE:
             print("Difficulty increasing")
             return last_block.difficulty + 1
