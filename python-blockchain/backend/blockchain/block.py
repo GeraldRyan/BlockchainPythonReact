@@ -42,6 +42,11 @@ class Block:
             f'nonce: {self.nonce})'
         )
 
+    def __eq__(self, other):
+        if (other is not None):
+            return self.__dict__ == other.__dict__
+        return False
+
     @staticmethod
     def mine_block(last_block, data):
         """
