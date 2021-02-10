@@ -38,15 +38,13 @@ class Blockchain:
       '''
       Serialize the blockchain into a list of blocks.
       '''
-      serialized_chain = []
 
-      for block in self.chain:
-        serialized_chain.append(block.to_json())
-        # print(f'Block: {block} \n\nand Block.to_json: {block.to_json()}')
-      # print("Serialized Chain of flask\n")
-      # print(jsonify(serialized_chain))
-
-      return serialized_chain
+      return list(map(lambda block: block.to_json(), self.chain))
+      # Replaces
+      # serialized_chain = []
+      # for block in self.chain:
+      #   serialized_chain.append(block.to_json())
+      # return serialized_chain
 
     @staticmethod
     def is_valid_chain(chain):

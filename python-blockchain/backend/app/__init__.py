@@ -17,17 +17,7 @@ def route_default():
 
 @app.route("/blockchain")
 def route_blockchain():
-  print("XXXXXXXXXXXXXXXXXXXX\n")
-  blockchain_json = blockchain.to_json()
-  print(blockchain_json)
-  blockchain_jsonified = jsonify(blockchain_json)
-  print("XXXXXXXXXXXXXXXXXXXX\n")
-  print("XXXXXXXXXXXXXXXXXXXX\n")
-  print(blockchain_jsonified)
-
-  return blockchain_jsonified
-
-  # return jsonify(blockchain.to_json())
+  return jsonify(blockchain.to_json())
 
 
 app.run()
