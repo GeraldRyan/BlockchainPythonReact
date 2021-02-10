@@ -47,6 +47,23 @@ class Block:
             return self.__dict__ == other.__dict__
         return False
 
+    def to_json(self):
+        '''
+        Serialize the block into a dictionary of its attributes
+        Note, at the moment the last_block is being dropped from the response.
+        Should it prove to be necessary for the blockchain network, we will restore it back and serialize it.
+        '''
+
+
+        block_as_dict = self.__dict__
+        if "last_block" in block_as_dict:
+            block_as_dict.pop("last_block")
+        return block_as_dict
+        # block_as_dict = self.__dict__
+        # if self.last_block != None:
+        #     block_as_dict["last_block"] = self.last_block.__dict__
+        # return block_as_dict
+
     @staticmethod
     def mine_block(last_block, data):
         """
@@ -54,13 +71,14 @@ class Block:
         """
         timestamp = time.time_ns()
         last_hash = last_block.hash
-        if last_block.last_block == None: # if block #2 
-            difficulty = 4 # second block and no need to call adjust. 
+        if last_block.last_block == None:  # if block #2
+            difficulty = 4  # second block and no need to call adjust.
         elif last_block.last_block.last_block == None:
             difficulty = 5
         else:
             second_last_timestamp = last_block.last_block.timestamp
-            difficulty = Block.adjust_difficulty(last_block, second_last_timestamp)
+            difficulty = Block.adjust_difficulty(
+                last_block, second_last_timestamp)
         nonce = 0
         hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
 
@@ -69,7 +87,7 @@ class Block:
             timestamp = time.time_ns()
             hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
         # print(f"Block {Block.NUMBER} mined. Difficulty:{difficulty}\n\n")
-        Block.NUMBER +=1
+        Block.NUMBER += 1
         return Block(timestamp, last_hash, hash, data, difficulty, nonce, last_block)
 
     @staticmethod
@@ -109,11 +127,11 @@ class Block:
 
         if block.last_hash != last_block.hash:
             raise Exception('The block last_hash must be correct')
-        if hex_to_binary(block.hash)[0:block.difficulty] != '0'* block.difficulty:
+        if hex_to_binary(block.hash)[0:block.difficulty] != '0' * block.difficulty:
             raise Exception('The proof of work requirement was not met')
         if abs(last_block.difficulty - block.difficulty) > 1:
             raise Exception('The block difficulty must only adjust by 1')
-        
+
         reconstructed_hash = crypto_hash(
             block.timestamp,
             block.last_hash,
@@ -126,16 +144,18 @@ class Block:
             raise Exception('The block hash must be correct')
 
 
-
 def main():
     genesis_block = Block.genesis()
-    bad_block = Block.mine_block(genesis_block,'foo')
-    bad_block.last_hash = 'evil_data' #TOGGLE ME good block/bad block
+    bad_block = Block.mine_block(genesis_block, 'foo')
+    bad_block.last_hash = 'evil_data'  # TOGGLE ME good block/bad block
     try:
         Block.is_valid_block(genesis_block, bad_block)
-    except Exception as e: # means only exception message is displayed in console.
+    except Exception as e:  # means only exception message is displayed in console.
         print(f'is_valid_block: {e}')
-
+    print("BLOCK DICT")
+    print(bad_block.__dict__)
+    print("BLOCK SERIALIZED (TO JSON)")
+    print(bad_block.to_json())
 
 
 if __name__ == '__main__':
