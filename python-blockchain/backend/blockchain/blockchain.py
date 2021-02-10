@@ -38,8 +38,10 @@ class Blockchain:
       '''
       Serialize the blockchain into a list of blocks.
       '''
+      return list(map(lambda block: block.to_json(), self.chain)) 
 
-      return list(map(lambda block: block.to_json(), self.chain))
+      # We know this turns each block in the blockchain into a json serialized object. 
+      # It must get the blocks from the self.chain. The left side operand must be converting them in place. 
       # Replaces
       # serialized_chain = []
       # for block in self.chain:
