@@ -40,14 +40,6 @@ class Blockchain:
       '''
       return list(map(lambda block: block.to_json(), self.chain)) 
 
-      # We know this turns each block in the blockchain into a json serialized object. 
-      # It must get the blocks from the self.chain. The left side operand must be converting them in place. 
-      # Replaces
-      # serialized_chain = []
-      # for block in self.chain:
-      #   serialized_chain.append(block.to_json())
-      # return serialized_chain
-
     @staticmethod
     def is_valid_chain(chain):
         '''

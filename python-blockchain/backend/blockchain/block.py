@@ -11,7 +11,6 @@ GENESIS_DATA = {
     'data': [],
     'difficulty': 3,
     'nonce': 'genesis_nonce',
-    'last_block': None
 }
 
 
@@ -20,16 +19,14 @@ class Block:
     Block: a unit of storage.
     Store transactions in a blockchain that supports a cryptocurrency.
     """
-    NUMBER = 2
 
-    def __init__(self, timestamp, last_hash, hash, data, difficulty, nonce, last_block=None):
+    def __init__(self, timestamp, last_hash, hash, data, difficulty, nonce):
         self.timestamp = timestamp
         self.last_hash = last_hash
         self.hash = hash
         self.data = data
         self.difficulty = difficulty
         self.nonce = nonce
-        self.last_block = last_block
 
     def __repr__(self):
         return (
@@ -50,19 +47,8 @@ class Block:
     def to_json(self):
         '''
         Serialize the block into a dictionary of its attributes
-        Note, at the moment the last_block is being dropped from the response.
-        Should it prove to be necessary for the blockchain network, we will restore it back and serialize it.
         '''
-
-
-        block_as_dict = self.__dict__
-        if "last_block" in block_as_dict:
-            block_as_dict.pop("last_block")
-        return block_as_dict
-        # block_as_dict = self.__dict__
-        # if self.last_block != None:
-        #     block_as_dict["last_block"] = self.last_block.__dict__
-        # return block_as_dict
+        return self.__dict__
 
     @staticmethod
     def mine_block(last_block, data):
@@ -71,24 +57,16 @@ class Block:
         """
         timestamp = time.time_ns()
         last_hash = last_block.hash
-        if last_block.last_block == None:  # if block #2
-            difficulty = 4  # second block and no need to call adjust.
-        elif last_block.last_block.last_block == None:
-            difficulty = 5
-        else:
-            second_last_timestamp = last_block.last_block.timestamp
-            difficulty = Block.adjust_difficulty(
-                last_block, second_last_timestamp)
+        difficulty = Block.adjust_difficulty(last_block, timestamp)
         nonce = 0
         hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
 
         while hex_to_binary(hash)[0:difficulty] != '0' * difficulty:
             nonce += 1
             timestamp = time.time_ns()
+            difficulty = Block.adjust_difficulty(last_block, timestamp)
             hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
-        # print(f"Block {Block.NUMBER} mined. Difficulty:{difficulty}\n\n")
-        Block.NUMBER += 1
-        return Block(timestamp, last_hash, hash, data, difficulty, nonce, last_block)
+        return Block(timestamp, last_hash, hash, data, difficulty, nonce)
 
     @staticmethod
     def genesis():
@@ -98,20 +76,17 @@ class Block:
         return Block(**GENESIS_DATA)
 
     @staticmethod
-    def adjust_difficulty(last_block, second_last_timestamp):
+    def adjust_difficulty(last_block, new_timestamp):
         '''
         Calculate the adjusted difficulty according to the MINE_RATE.
         Increase the difficulty for quickly mined blocks. 
         Decrease the difficulty for slowly mined blocks. 
         '''
-        time_diff = last_block.timestamp - second_last_timestamp
-        # print(f"Block time difference:{time_diff/1000000000}")
+        time_diff = new_timestamp - last_block.timestamp
         if (time_diff) < MINE_RATE:
-            print("Difficulty increasing")
             return last_block.difficulty + 1
 
         if (last_block.difficulty - 1) > 0:
-            print("Difficulty DECREASING")
             return last_block.difficulty - 1
         return 1
 
@@ -138,7 +113,6 @@ class Block:
             block.data,
             block.nonce,
             block.difficulty,
-            # block.last_block # Not necessary or used in hash function. It's part of object but is not put into hash
         )
         if block.hash != reconstructed_hash:
             raise Exception('The block hash must be correct')

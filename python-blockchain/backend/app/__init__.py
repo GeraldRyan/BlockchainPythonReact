@@ -13,11 +13,11 @@ for i in range(5):
 def route_default():
   return "<h1 style='color:green'>Welcome to the Blockchain!</h1>"
 
-@app.route("/blockchain")
+@app.route("/blockchain/")
 def route_blockchain():
   return jsonify(blockchain.to_json())
 
-@app.route("/blockchain/mine")
+@app.route("/blockchain/mine/")
 def route_blockchain_mine():
   transaction_data = "stubbed_transaction_data"
 
