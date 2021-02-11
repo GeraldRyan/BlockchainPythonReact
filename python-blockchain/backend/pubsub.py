@@ -9,24 +9,39 @@ publish_key = "pub-c-8f40bdb7-10f0-4867-8bcc-cfd3af4a26f5"
 pnconfig = PNConfiguration()
 pnconfig.subscribe_key = subscribe_key
 pnconfig.publish_key = publish_key
-pubnub = PubNub(pnconfig)
 
 TEST_CHANNEL = "TEST_CHANNEL"
 
-pubnub.subscribe().channels([TEST_CHANNEL]).execute()
 
 class Listener(SubscribeCallback):
-  def message(self, pubnub, message_object):
-    print(f'\n-- Incoming message_object: {message_object}')
+    def message(self, pubnub, message_object):
+        print(f'\n-- Incoming message_object: {message_object}')
 
 
-pubnub.add_listener(Listener())
+class PubSub():
+    '''
+    Handles the publish/subscribe layer of the application
+    Provides communication between the nodes of the blockchain network.
+    '''
+
+    def __init__(self):
+        self.pubnub = PubNub(pnconfig)
+        self.pubnub.subscribe().channels([TEST_CHANNEL]).execute()
+        self.pubnub.add_listener(Listener())
+
+    def publish(self, channel, message):
+        '''
+        Publish the message object to the channel.
+        '''
+        self.pubnub.publish().channel(channel).message(message).sync()
+
 
 def main():
-  time.sleep(1)
-  pubnub.publish().channel(TEST_CHANNEL).message({'foo':'var'}).sync()
+    pubsub = PubSub()
+    time.sleep(1)
 
-if __name__=='__main__':
-  main()
+    pubsub.publish()(TEST_CHANNEL, {'foo': 'var'})
 
-  
+
+if __name__ == '__main__':
+    main()
