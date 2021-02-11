@@ -40,7 +40,7 @@ def main():
     pubsub = PubSub()
     time.sleep(1)
 
-    pubsub.publish()(TEST_CHANNEL, {'foo': 'var'})
+    pubsub.publish(TEST_CHANNEL, {'foo': 'var'})
 
 
 if __name__ == '__main__':
