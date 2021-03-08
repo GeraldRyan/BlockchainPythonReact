@@ -15,7 +15,7 @@ TEST_CHANNEL = "TEST_CHANNEL"
 
 class Listener(SubscribeCallback):
     def message(self, pubnub, message_object):
-        print(f'\n-- Incoming message_object: {message_object}')
+        print(f'\n-- Channel: {message_object.channel} | Message: {message_object.message}' )
 
 
 class PubSub():
@@ -40,7 +40,7 @@ def main():
     pubsub = PubSub()
     time.sleep(1)
 
-    pubsub.publish(TEST_CHANNEL, {'foo': 'var'})
+    pubsub.publish(TEST_CHANNEL, {'foo': 'bar'})
 
 
 if __name__ == '__main__':

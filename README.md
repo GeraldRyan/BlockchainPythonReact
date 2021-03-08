@@ -7,9 +7,10 @@ Based on [this course](https://www.udemy.com/course/python-js-react-blockchain) 
 
 windows:
 ```
-source blockchain-env/Scripts/activate
+source ./python-blockchain/blockchain-env/Scripts/activate
 ```
-
+bash:
+source ./python-blockchain/blockchain-env/Scripts/activate
 ***Install All packages***
 ```
 pip install -r requirements.txt
